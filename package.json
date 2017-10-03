@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "tsc": "tsc --w",
-    "lint" : "tslint --project tslint.json src/**/*.ts",
+    "start": "nodemon dist/server.js",
+    "lint": "tslint --project tslint.json src/**/*.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -18,8 +19,14 @@
   "license": "ISC",
   "dependencies": {
     "@types/node": "^8.0.31",
+    "express": "^4.16.1",
     "tslint": "^5.7.0",
     "tslint-config-airbnb": "^5.3.0",
-    "typescript": "^2.5.3"
+    "typescript": "^2.5.3",
+    "uuid4": "^1.0.0"
+  },
+  "devDependencies": {
+    "body-parser": "^1.18.2",
+    "nodemon": "^1.12.1"
   }
 }

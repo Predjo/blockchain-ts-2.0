@@ -1,1 +1,1 @@
-A simple blockchain created using Javascript
+A simple blockchain created using Typescript
