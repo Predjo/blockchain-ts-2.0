@@ -1,0 +1,25 @@
+{
+  "name": "blockchain-js",
+  "version": "0.0.1",
+  "description": "A simple blockchain created using Javascript",
+  "main": "index.js",
+  "scripts": {
+    "tsc": "tsc --w",
+    "lint" : "tslint --project tslint.json src/**/*.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "javascript",
+    "blockchain",
+    "http",
+    "nodejs"
+  ],
+  "author": "Nikola Predovan",
+  "license": "ISC",
+  "dependencies": {
+    "@types/node": "^8.0.31",
+    "tslint": "^5.7.0",
+    "tslint-config-airbnb": "^5.3.0",
+    "typescript": "^2.5.3"
+  }
+}
