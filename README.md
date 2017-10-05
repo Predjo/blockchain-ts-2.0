@@ -1,5 +1,5 @@
 # Introduction
-This repository implements simple blockchain using [TypeScript](https://www.typescriptlang.org). It is inspired by the following [article](https://hackernoon.com/learn-blockchains-by-building-one-117428612f46)
+This repository implements simple blockchain using [TypeScript](https://www.typescriptlang.org). It is inspired by the following [article](https://hackernoon.com/learn-blockchains-by-building-one-117428612f46).
 
 # Usage
 Run `npm start -- -port <port-number>` to start the blockchain node.
