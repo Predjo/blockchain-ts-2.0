@@ -4,6 +4,9 @@ This repository implements simple blockchain using [TypeScript](https://www.type
 # Usage
 Run `npm start -- -port <port-number>` to start the blockchain node.
 
+# Develop
+Run `npm run tsc:watch` to start the TypeScript and run `npm run watch` to start node in watch mode.
+
 # Modules
 
 ## blockchain.js

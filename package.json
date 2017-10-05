@@ -4,8 +4,10 @@
   "description": "A simple blockchain created using Javascript",
   "main": "index.js",
   "scripts": {
-    "tsc": "tsc --w",
-    "start": "nodemon dist/server.js",
+    "tsc:": "tsc",
+    "tsc:watch" : "tsc --w",
+    "start": "tsc && node dist/server.js",
+    "watch": "nodemon dist/server.js",
     "lint": "tslint --project tslint.json src/**/*.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
