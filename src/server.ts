@@ -2,12 +2,15 @@
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as uuid from 'uuid4';
+import * as parseArgs from 'minimist';
 
 import Blockchain from './blockchain/Blockchain';
 
+const args = parseArgs(process.argv.slice(2));
+
 const app = express();
 const router = express.Router();
-const port = 3000;
+const port: number = args.port || 3000;
 
 const nodeIndentifier = String(uuid()).replace(/-/g, '');
 
@@ -65,6 +68,34 @@ app.get('/chain', (req, res) => {
   });
 });
 
+app.post('/nodes/register', (req, res) => {
+  const nodes = req.body.nodes;
+
+  if (!nodes) {
+    res.status(400).send('Error: Please supply a valid list of nodes');
+    return;
+  }
+
+  for (const node of nodes) {
+    blockchain.registerNode(node);
+  }
+
+  res.status(201).send({
+    message : 'New nodes have beend added',
+    totalNodes : blockchain.nodes.size,
+  });
+});
+
+app.get('/nodes/resolve', (req, res) => {
+  blockchain.resolveConflicts().then((replaced : boolean) => {
+    res.status(200).send({
+      message : replaced ? 'Our chain was replaced' : 'Our chain is authoratative',
+      chain : blockchain.chain,
+    });
+  });
+});
+
 app.listen(port);
 
-console.log('Hello from the Blockchain server');
+console.log('Hello from the Blockchain server started on ' + port);
+

@@ -1,5 +1,6 @@
 
 import * as crypto from 'crypto';
+import axios, { AxiosResponse } from 'axios';
 import { URL } from 'url';
 
 import Block from './Block';
@@ -7,8 +8,9 @@ import Transaction from './Transaction';
 
 class Blockchain {
 
-  chain : Array<any>;
+  chain : Array<Block>;
   currentTransactions : Array<Transaction>;
+  nodes : Set<string>;
 
   constructor() {
 
@@ -25,10 +27,10 @@ class Blockchain {
     
     const block : Block = {
       proof,
-      previousHash,
       index : this.chain.length,
       timestamp : Date.now(),
       transactions : [...this.currentTransactions],
+      previousHash : Boolean(previousHash) ? previousHash : Blockchain.hash(this.lastBlock),
     };
 
     this.currentTransactions = [];
@@ -73,11 +75,6 @@ class Blockchain {
     return guessHash.indexOf('0000') === 0; 
   }
 
-
-  get lastBlock() {
-    return this.chain[Math.max(0, this.chain.length - 1)];
-  }
-
   // Creates a SHA-256 hash of a Block
   static hash(block : Block) : string {
     return crypto
@@ -86,10 +83,77 @@ class Blockchain {
       .digest('hex');
   }
 
+  get lastBlock() {
+    return this.chain[Math.max(0, this.chain.length - 1)];
+  }
+
   // Add a new node to the list of nodes
   registerNode(address : string) : void {
     const parsedURL = new URL(address);
     this.nodes.add(parsedURL.host);
+  }
+
+  // Determine if a given blockchain is valid
+  static validChain(chain: Array<Block>): boolean {
+    let lastBlock = chain[0];
+    let currentIndex = 1;
+
+    while (currentIndex < chain.length) {
+      const block = chain[currentIndex];
+      console.log(lastBlock);
+      console.log(block);
+      console.log('\n-------------\n');
+
+      // Check that the hash of the block is correct
+      if (block.previousHash !== Blockchain.hash(lastBlock)) {
+        return false;
+      }
+
+      if (!Blockchain.validProof(lastBlock.proof, block.proof)) {
+        return false;
+      }
+
+      lastBlock = block;
+      currentIndex += 1;
+
+      return true;
+    }
+  }
+
+
+  // This is our Consensus Algorithm, it resolves conflicts
+  // by replacing our chain with the longest one in the network.
+  async resolveConflicts(): Promise<boolean> {
+    const neighbours = this.nodes;
+    let newChain = undefined;
+
+    // We're only looking for chains longer than ours
+    let maxLength = this.chain.length;
+
+    // Grab and verify the chains from all the nodes in our network
+    for (const node of neighbours) {
+      const response : AxiosResponse = await axios(`http://${ node }/chain`);
+
+      if (response.status === 200) {
+        const length = response.data.length;
+        const chain  = response.data.chain;
+
+        // Check if the length is longer and the chain is valid
+
+        if (length > maxLength && Blockchain.validChain(chain)) {
+          maxLength = length;
+          newChain = chain;
+        }
+      }
+    }
+
+    if (newChain) {
+      this.chain = newChain;
+      return true;
+    } else {
+      return false;
+    }
+
   }
 
 }

@@ -18,8 +18,11 @@
   "author": "Nikola Predovan",
   "license": "ISC",
   "dependencies": {
+    "@types/axios": "^0.14.0",
     "@types/node": "^8.0.31",
+    "axios": "^0.16.2",
     "express": "^4.16.1",
+    "minimist": "^1.2.0",
     "tslint": "^5.7.0",
     "tslint-config-airbnb": "^5.3.0",
     "typescript": "^2.5.3",
