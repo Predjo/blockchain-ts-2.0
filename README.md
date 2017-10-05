@@ -4,7 +4,7 @@ This repository implements simple blockchain using [TypeScript](https://www.type
 # Modules
 
 ## blockchain.js
-Contains Blockchain class that represents blockchain. Every instance of the class share same blockchain.
+Contains Blockchain class that represents blockchain.
 
 ## block.js
 Template for block objects.
