@@ -1,6 +1,9 @@
 # Introduction
 This repository implements simple blockchain using [TypeScript](https://www.typescriptlang.org). It is inspired by the following [article](https://hackernoon.com/learn-blockchains-by-building-one-117428612f46)
 
+# Usage
+Run `npm start -- -port <port-number>` to start the blockchain node.
+
 # Modules
 
 ## blockchain.js
@@ -9,7 +12,7 @@ Contains Blockchain class that represents blockchain.
 ## block.js
 Template for block objects.
 
-## transactio .js
+## transaction.js
 Template for transaction objects.
 
 # Proof of Work algorithm
@@ -18,3 +21,5 @@ Blockchain class methods *proofOfWork* and *validProof* implements Proof of Work
 
 # Consensus algorithm
 Consensus algorithm ensures that all nodes in decentralized network reflect the same blockchain. Rule of Consensus algorithm is that the longest valid chain is authoritative.
+
+
