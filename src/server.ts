@@ -5,6 +5,7 @@ import * as uuid from 'uuid4';
 import * as parseArgs from 'minimist';
 
 import Blockchain from './blockchain/Blockchain';
+import Miner from './Miner';
 
 const args = parseArgs(process.argv.slice(2));
 
@@ -15,6 +16,7 @@ const port: number = args.port || 3000;
 const nodeIndentifier = String(uuid()).replace(/-/g, '');
 
 const blockchain = new Blockchain();
+const miner = new Miner();
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -25,7 +27,7 @@ app.get('/mine', (req, res) => {
 
   // We run the proof of work algorithm to get the next proof...
   const lastBlock = blockchain.lastBlock;
-  const lastProof = lastBlock.proof;
+  const lastProof = lastBlock.nonce;
   const proof     = blockchain.proofOfWork(lastProof);
 
   // We must receive a reward for finding the proof.
@@ -41,7 +43,7 @@ app.get('/mine', (req, res) => {
     message : 'New Block Forged',
     index : block.index,
     transactions : block.transactions,
-    proof : block.proof,
+    proof : block.nonce,
     previousHash : block.previousHash,
   });
 
@@ -77,22 +79,22 @@ app.post('/nodes/register', (req, res) => {
   }
 
   for (const node of nodes) {
-    blockchain.registerNode(node);
+    // blockchain.registerNode(node);
   }
 
   res.status(201).send({
     message : 'New nodes have beend added',
-    totalNodes : blockchain.nodes.size,
+    // totalNodes : blockchain.nodes.size,
   });
 });
 
 app.get('/nodes/resolve', (req, res) => {
-  blockchain.resolveConflicts().then((replaced : boolean) => {
+  /*blockchain.resolveConflicts().then((replaced : boolean) => {
     res.status(200).send({
       message : replaced ? 'Our chain was replaced' : 'Our chain is authoratative',
       chain : blockchain.chain,
     });
-  });
+  });*/
 });
 
 app.listen(port);

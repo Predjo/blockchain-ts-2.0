@@ -5,7 +5,8 @@ interface Block {
   readonly index : number;
   readonly timestamp : number;
   readonly transactions : Array<Transaction>;
-  readonly proof : number;
+  readonly nonce : number;
+  readonly difficulty : number;
   readonly previousHash? : string;
 }
 
