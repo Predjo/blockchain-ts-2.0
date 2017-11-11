@@ -13,7 +13,7 @@ import {
   verifyWithPublicKey,
 } from './Crypto';
 
-class Miner {
+class Blockchain {
 
   public nodes: Set<string>;
   
@@ -180,4 +180,4 @@ class Miner {
   }
 }
 
-export default Miner;
+export default Blockchain;
