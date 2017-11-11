@@ -3,9 +3,9 @@ import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as parseArgs from 'minimist';
 
-import Block from './blockchain/Block';
-import Transaction from './blockchain/Transaction';
-import Blockchain from './blockchain/Blockchain';
+import Block from './Block';
+import Transaction from './Transaction';
+import Blockchain from './Blockchain';
 
 // Create our express server
 const app = express();
