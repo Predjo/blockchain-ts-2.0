@@ -7,7 +7,7 @@ import Block from './blockchain/Block';
 import Transaction from './blockchain/Transaction';
 import Blockchain from './blockchain/Blockchain';
 
-// Create our express server
+// Create express server
 const app = express();
 const router = express.Router();
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -17,7 +17,7 @@ app.use(bodyParser.json());
 const args = parseArgs(process.argv.slice(2));
 const port: number = args.port || 3000;
 
-// Define our miner
+// Define miner
 const miner = new Blockchain();
 
 // Parse the list of neighbor nodes and register them with the miner
