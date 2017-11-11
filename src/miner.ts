@@ -25,7 +25,6 @@ const nodes = args.nodes ? args.nodes.split(',') : [] ;
 nodes.forEach(node => miner.registerNode(node));
 
 // REST API
-
 app.post('/transactions/new', (req, res) => {
 
   const newTransaction: Transaction = miner.createTransaction(miner.publicKey, req.body.recipient, req.body.amount);
