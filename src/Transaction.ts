@@ -5,7 +5,7 @@ interface Transaction {
   readonly amount: number;
   readonly timestamp: number;
 
-  signature: string;
+  readonly signature?: string;
 }
 
 export default Transaction;

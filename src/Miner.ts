@@ -1,161 +1,120 @@
 
-import * as crypto from 'crypto';
-import axios, { AxiosResponse } from 'axios';
-import * as stringify from 'json-stable-stringify';
+import * as express from 'express';
+import * as bodyParser from 'body-parser';
+import * as parseArgs from 'minimist';
 
-import Blockchain from './blockchain/Blockchain';
-import Transaction from './blockchain/Transaction';
-import Block from './blockchain/Block';
+import Block from './Block';
+import Transaction from './Transaction';
+import Blockchain from './Blockchain';
 
-import {
-  hash,
-  generateKeyPair,
-  signWithPrivateKey,
-  verifyWithPublicKey,
-} from './Crypto';
+// Create our express server
+const app = express();
+const router = express.Router();
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
-class Miner {
+// Parse command line arguments 
+const args = parseArgs(process.argv.slice(2));
+const port: number = args.port || 3000;
 
-  public nodes: Set<string>;
-  
-  public blockchain: Blockchain;
-  public pendingTransactions: Array<Transaction>;
-  public difficulty: number;
+// Define our miner
+const miner = new Blockchain();
 
-  public publicKey: string;
-  private privateKey: string;
+// Parse the list of neighbor nodes and register them with the miner
+const nodes = args.nodes ? args.nodes.split(',') : [] ;
+nodes.forEach(node => miner.registerNode(node));
 
-  constructor() {
-    this.nodes = new Set();
+// REST API
+
+app.post('/transactions/new', (req, res) => {
+
+  const newTransaction: Transaction = miner.createTransaction(miner.publicKey, req.body.recipient, req.body.amount);
+  const signedTransaction: Transaction = miner.signTransaction(newTransaction);
+
+  console.log(`Created new transaction ${signedTransaction.signature}`);
+  console.log('It will be added to the list and shared\n');
+
+  miner.pendingTransactions.push(signedTransaction);
+  miner.broadcastTransaction(signedTransaction, miner.nodes).catch(e => console.error(e.message));
+
+  res.status(200).send({
+    message: 'Transaction created successfuly',
+    transaction: signedTransaction,
+  });
+});
+
+app.get('/mine', (req, res) => {
+
+  if (miner.pendingTransactions.length) {
+
+    console.log('Mining started...');
+
+    const newBlock = miner.mine();
+
+    console.log('Mining complete, new block forged\n');
+
+    miner.broadcastBlock(newBlock, miner.nodes).catch(e => console.error(e.message));
+
+    res.status(200).send({
+      message : 'New Block Forged',
+      block : newBlock,
+    });
+  } else {
+    res.status(400).send({
+      message : 'No Pending Transactions!',
+    });    
+  }
+});
+
+app.get('/chain', (req, res) => {
+  res.status(200).send({
+    chain : miner.chain,
+    length : miner.chain.length,
+    isValid : miner.isValid(),
+  });
+});
+
+app.post('/transactions', (req, res) => {
+
+  const transaction: Transaction = req.body;
+  const isValid = miner.validateTransaction(transaction);
+  const isDuplicate = Boolean(miner.pendingTransactions.find(tran => tran.signature === transaction.signature));
+
+  console.log(`Recieved transaction ${transaction.signature}`);
+
+  if (isValid && !isDuplicate) {
+    console.log('Transaction is valid, it will be added to the list and shared\n');
     
-    this.blockchain = new Blockchain();
-    this.pendingTransactions = [];
-
-    // Mining difficulty
-    this.difficulty = 4;
-
-    // Generate public/private key pair using ECDSA
-    [this.publicKey, this.privateKey] = generateKeyPair();
-
-    // Create Genesis block
-    const genesisBlock = this.createBlock([], undefined);
-    this.addBlock(genesisBlock);
-  }
-
-  // Add a new node to the list of nodes
-  public registerNode(node : string) : void {
-    this.nodes.add(node);
-  }
-
-  // Creates a new transaction and signes it by hashing the transaction data
-  //  and encrypting the hash with the private key
-  public createTransaction(sender: string, recipient: string, amount: number): Transaction {
+    miner.pendingTransactions.push(transaction);
+    miner.broadcastTransaction(transaction, miner.nodes).catch(e => console.error(e.message));
     
-    const transactionData = {
-      sender, recipient, amount, timestamp : Date.now(),
-    };
-
-    const transactionHash = hash(stringify(transactionData));
-
-    const signature = signWithPrivateKey(this.privateKey, transactionHash);
-
-    return { ...transactionData, signature };
+  } else {
+    console.error('Transaction is invalid or duplicate and it will be discarded\n');
   }
 
-  // Validates transaction by decrypting the transaction signature and comparing
-  //  it with the hash of the transaction data
-  public validateTransaction(transaction: Transaction): boolean {
+  res.status(200).send();
+});
 
-    const { signature, ...transactionData } = transaction;
+app.post('/blocks', (req, res) => {
 
-    const transactionHash = hash(stringify(transactionData));
+  const block: Block = req.body;
+  const isValid = miner.validateBlock(block);
+  const isDuplicate = Boolean(miner.chain.find(blk => blk.timestamp === block.timestamp));
 
-    return verifyWithPublicKey(transaction.sender, transactionHash, signature);
+  console.log('Recieved new block');
+
+  if (isValid && !isDuplicate) {
+    console.log('Block is valid, it will be added to the chain and shared\n');
+    miner.addBlock(block);
+    miner.broadcastBlock(block, miner.nodes).catch(e => console.error(e.message));
+  } else {
+    console.error('Block is invalid or duplicate and it will be discarded\n');
   }
 
-  // Add a transaction to the list of pending transactions
-  public addTransaction(transaction: Transaction) {
-    this.pendingTransactions.push(transaction);
-  }
+  res.status(200).send();
+});
 
-  // Send the transaction to the provided list of nodes
-  public async broadcastTransaction(transaction: Transaction, nodes: Set<string>) {
-    for (const node of nodes) {
-      console.log(`Sending transaction to ${ node }`);
-      await axios.post(`http://${ node }/transactions`, transaction);   
-    }
-  }
+app.listen(port);
 
-  // Creates a block
-  public createBlock(transactions: Array<Transaction>, previousHash: string): Block {
-    return {
-      transactions,
-      previousHash,
-      nonce: 0,
-      timestamp: Date.now(),
-      difficulty: this.difficulty,
-    };
-  }
-
-  // Validates the block by hashing it and checking if the leading number
-  //  of zeroes in the hash match the difficulty
-  public validateBlock(block: Block): boolean {
-    const difficulty = block.difficulty;
-    const blockHash  = hash(stringify(block));
-    const zeroString = '0'.repeat(difficulty);
-
-    return blockHash.indexOf(zeroString) === 0;
-  }
-
-  // Create block by using all the pending transactions and running the proofOfWork until
-  //  the valid nunce is found
-  // Adds the new mined block to the chain and returns it
-  
-  public mine(): Block {
-    const transactions = [...this.pendingTransactions];
-    const previousHash = hash(stringify(this.blockchain.lastBlock));
-    const block = this.createBlock(transactions, previousHash);
-
-    const minedBlock = this.proofOfWork(block);
-
-    this.addBlock(minedBlock);
-
-    return minedBlock;
-  }
-
-  // Simple Proof of Work Algorithm:
-  // Increment the nonce number in the block until the block is valid
-  // Returns the valid nunce
-  public proofOfWork(block: Block): Block {
-
-    block.nonce = 0;
-    
-    while (!this.validateBlock(block)) {
-      block.nonce += 1;
-    }
-
-    return block;
-  }
-
-  // Adds a block to the Blockchain and removes all the pending transactiones included in the block
-  public addBlock(block: Block) {
-    this.blockchain.chain.push(block);
-    
-    this.pendingTransactions = this.pendingTransactions
-      .filter(transaction => !block.transactions
-        .map(blockTransaction => blockTransaction.signature)
-        .includes(transaction.signature),
-    );
-  }
-  
-  // Send the block to the provided list of nodes
-  public async broadcastBlock(block: Block, nodes: Set<string>) {
-    for (const node of nodes) {
-      console.log(`Sending block to ${ node }`);
-      await axios.post(`http://${ node }/blocks`, block);
-    }
-  }
-
-}
-
-export default Miner;
+console.log('Hello from the Miner started on ' + port);
+console.log('My public address is: ' + miner.publicKey + '\n');
