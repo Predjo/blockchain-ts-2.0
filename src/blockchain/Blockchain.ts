@@ -175,11 +175,9 @@ class Miner {
         return false;
       }
     }
-
+    
     return true;
-
   }
-
 }
 
 export default Miner;
