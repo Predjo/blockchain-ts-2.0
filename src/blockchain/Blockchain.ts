@@ -1,14 +1,10 @@
 
-import * as crypto from 'crypto';
-import axios, { AxiosResponse } from 'axios';
-import { URL } from 'url';
-
 import Block from './Block';
 import Transaction from './Transaction';
 
 class Blockchain {
 
-  public chain : Array<Block>;
+  public chain: Array<Block>;
 
   constructor() {
     this.chain = [];

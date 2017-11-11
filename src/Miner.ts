@@ -16,14 +16,14 @@ import {
 
 class Miner {
 
-  public nodes : Set<string>;
+  public nodes: Set<string>;
   
-  public blockchain : Blockchain;
-  public pendingTransactions : Array<Transaction>;
-  public difficulty : number;
+  public blockchain: Blockchain;
+  public pendingTransactions: Array<Transaction>;
+  public difficulty: number;
 
-  public publicKey : string;
-  private privateKey : string;
+  public publicKey: string;
+  private privateKey: string;
 
   constructor() {
     this.nodes = new Set();
@@ -79,7 +79,7 @@ class Miner {
   }
 
   // Send the transaction to the provided list of nodes
-  public async propagateTransaction(transaction: Transaction, nodes: Set<string>) {
+  public async broadcastTransaction(transaction: Transaction, nodes: Set<string>) {
     for (const node of nodes) {
       console.log(`Sending transaction to ${ node }`);
       await axios.post(`http://${ node }/transactions`, transaction);   
@@ -149,7 +149,7 @@ class Miner {
   }
   
   // Send the block to the provided list of nodes
-  public async propagateBlock(block: Block, nodes: Set<string>) {
+  public async broadcastBlock(block: Block, nodes: Set<string>) {
     for (const node of nodes) {
       console.log(`Sending block to ${ node }`);
       await axios.post(`http://${ node }/blocks`, block);

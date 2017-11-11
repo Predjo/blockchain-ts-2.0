@@ -33,7 +33,7 @@ app.post('/transactions/new', (req, res) => {
   console.log('It will be added to the list and shared\n');
 
   miner.pendingTransactions.push(newTransaction);
-  miner.propagateTransaction(newTransaction, miner.nodes).catch(e => console.error(e.message));
+  miner.broadcastTransaction(newTransaction, miner.nodes).catch(e => console.error(e.message));
 
   res.status(200).send({
     message: 'Transaction created successfuly',
@@ -46,7 +46,7 @@ app.get('/mine', (req, res) => {
   if (miner.pendingTransactions.length) {
     const newBlock = miner.mine();
 
-    miner.propagateBlock(newBlock, miner.nodes).catch(e => console.error(e.message));
+    miner.broadcastBlock(newBlock, miner.nodes).catch(e => console.error(e.message));
 
     res.status(200).send({
       message : 'New Block Forged',
@@ -79,7 +79,7 @@ app.post('/transactions', (req, res) => {
     console.log('Transaction is valid, it will be added to the list and shared\n');
     
     miner.pendingTransactions.push(transaction);
-    miner.propagateTransaction(transaction, miner.nodes).catch(e => console.error(e.message));
+    miner.broadcastTransaction(transaction, miner.nodes).catch(e => console.error(e.message));
     
   } else {
     console.error('Transaction is invalid or duplicate and it will be discarded\n');
@@ -99,7 +99,7 @@ app.post('/blocks', (req, res) => {
   if (isValid && !isDuplicate) {
     console.log('Block is valid, it will be added to the chain and shared\n');
     miner.addBlock(block);
-    miner.propagateBlock(block, miner.nodes).catch(e => console.error(e.message));
+    miner.broadcastBlock(block, miner.nodes).catch(e => console.error(e.message));
   } else {
     console.error('Block is invalid or duplicate and it will be discarded\n');
   }
