@@ -23,7 +23,7 @@ Creates a new transaction using the miners public key as a sender address and pr
 
 | Parameter | Description |
 |-----------|-------------|
-| `recipient` | A hexadecimal hash address of a transaction recipient |
+| `recipient` | Hexadecimal hash address of a transaction recipient |
 | `amount` | Amount of coins to be transfered |
 
 <br/>
@@ -47,12 +47,28 @@ POST /transactions
 ```
 Used for broadcasting of transactions. If the transaction is valid and not duplicate it is added to the pending transaction pool. Transaction is than broadcasted again. Invalid or duplicate transactions are rejected.
 
+| Parameter | Description |
+|-----------|-------------|
+| `recipient` | Hexadecimal hash address of a transaction recipient |
+| `sender` | Hexadecimal hash address of a transaction sender |
+| `amount` | Amount of coins to be transfered |
+| `timestamp` | Time when transaction was created |
+| `signature` | Transaction hash encrypted with the private key of the sender |
+
 <br/>
 
 ```
 POST /blocks
 ```
 Used for broadcasting of blocks. If the block is valid and not duplicate it is added to the chain. All the transactions included in the block are removed from the pending transaction pool. Block is than broadcasted again. Invalid or duplicate blocks are rejected.
+
+| Parameter | Description |
+|-----------|-------------|
+| `transactions` | Array of transactions |
+| `difficulty` | Number representing the mining difficulty |
+| `previousHash` | Hexadecimal hash of a previous block in the chain |
+| `timestamp` | Time when block was mined |
+| `nonce` | Cryptographic nonce number used to prove work done to create a block |
 
 <br/>
 
