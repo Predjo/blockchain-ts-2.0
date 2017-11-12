@@ -6,7 +6,7 @@ interface Block {
   readonly difficulty: number; // Number representing the mining difficulty
   readonly previousHash?: string; // Hexadecimal hash of a previous block in the chain
   
-  timestamp: number; // Time when block was mined
+  timestamp: number; // Unix time when block was mined
   nonce: number; // Cryptographic nonce number used to prove work done to create a block
 }
 

@@ -25,6 +25,10 @@ const nodes = args.nodes ? args.nodes.split(',') : [] ;
 nodes.forEach(node => miner.registerNode(node));
 
 // REST API
+
+// Creates a new transaction using the miners public key as a sender address and private
+//  key to sign it. After it is created the transaction is added to the pending transaction pool
+//  and broadcasted to neighboring nodes.
 app.post('/transactions/new', (req, res) => {
 
   const newTransaction: Transaction = miner.createTransaction(miner.publicKey, req.body.recipient, req.body.amount);
@@ -42,14 +46,15 @@ app.post('/transactions/new', (req, res) => {
   });
 });
 
+// If there are pending transactions it starts the mining process to create a new block.
+// When created the new block is added to chain and broadcasted to neighboring nodes.
+// Else it returns 400.
 app.get('/mine', (req, res) => {
 
   if (miner.pendingTransactions.length) {
 
     console.log('Mining started...');
-
     const newBlock = miner.mine();
-
     console.log('Mining complete, new block forged\n');
 
     miner.broadcastBlock(newBlock, miner.nodes).catch(e => console.error(e.message));
@@ -65,6 +70,7 @@ app.get('/mine', (req, res) => {
   }
 });
 
+// Returns the current chain state and validates it.
 app.get('/chain', (req, res) => {
   res.status(200).send({
     chain : miner.chain,
@@ -73,6 +79,9 @@ app.get('/chain', (req, res) => {
   });
 });
 
+// Used for broadcasting of transactions.
+// If the transaction is valid and not duplicate, it is added to the pending transaction pool. 
+// Transaction is than broadcasted again. Invalid or duplicate transactions are discarded.
 app.post('/transactions', (req, res) => {
 
   const transaction: Transaction = req.body;
@@ -94,6 +103,10 @@ app.post('/transactions', (req, res) => {
   res.status(200).send();
 });
 
+// Used for broadcasting of blocks.
+// If the block is valid and not duplicate it is added to the chain. 
+// All the transactions included in the block are removed from the pending transaction pool.
+// Block is than broadcasted again. Invalid or duplicate blocks are discarded.
 app.post('/blocks', (req, res) => {
 
   const block: Block = req.body;
