@@ -13,19 +13,29 @@ Run `npm start -- --port <port-number> --nodes <node-list>` to start the blockch
 # Development
 Run `npm run tsc:watch` to start TypeScript compiler and run `npm run watch` to start node in watch mode.
 
+# Description
+This is a simple blockchain created to showcase some basic Blokchain concepts. It runs as an express server with REST interface.
+Network is created by creating multiple servers and providing them the list of neighboring nodes via the `--nodes` console parameter.
 
-# Hashing
+## Hashing
 Blockchain implements SHA-256 hashing function from Nodes native `crypto` package. It is used for verifying transactions and blocks.
 
-# Asymmetric Cryptography
+## Asymmetric Cryptography
 Blockchain implements asymmetric cryptography to sign and verify transactions. Private/public key pair is generated using Elliptic Curve Digital Signature Algorithm from the `rsasign` package.
 
-# Proof of Work algorithm
+## Transactions
+Blockchain can create simple transactions. It uses the public key of the miner as a `sender` address. Once created the transaction is hashed and signed with the miners private key. Signature is than included in the transaction.
+Other nodes can verify the transaction by rehashing the transaction data, decrypting the signature with the address in the `sender` field and comparing the two hashes.
+
+## Proof of Work algorithm
 Blockchain implements basic Proof of Work algorithm. Miners need to find a number called `nonce` that, when added to the block and hashed, produces a hash with `difficulty` number of leading 0s ('0000').  
 
 Blockchain class methods `proofOfWork` and `validateBlock` implement Proof of Work algorithm.
 
-# Broadcasting
+## Mining
+Mining is used to finish creating a new block. First a basic block is created using the `createBlock` method. At that point its `nonce` number is `0`. Than the correct `timestamp` is added before starting the Proof of Work algorithm. Once it is finished, the calculated `nonce` is added to the block. At that point the block is finished.
+
+## Broadcasting
 Transactions and blocks, once created, are broadcasted through the whole network. It is achieved by having each node sending REST calls to each node in the list of nodes given during initialization.
 
 # REST API endpoints
