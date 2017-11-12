@@ -21,20 +21,29 @@ POST /transactions/new
 ```
 Creates a new transaction using the miners public key as a sender address and private key to sign it. After it is created the transaction is added to the pending transaction pool and broadcasted to neighboring nodes.
 
+| Parameter | Description |
+|-----------|-------------|
+| `recipient` | A hexadecimal hash address of a transaction recipient |
+| `amount` | Amount of coins to be transfered |
+
+
 ```
 POST /mine
 ```
 If there are pending transactions it starts the mining process to create a new block. When created the new block is added to chain and broadcasted to neighboring nodes. Else it throws an error.
+
 
 ```
 GET /chain
 ```
 Returns the whole blockchain state.
 
+
 ```
 POST /transactions
 ```
 Used for broadcasting of transactions. If the transaction is valid and not duplicate it is added to the pending transaction pool. Transaction is than broadcasted again. Invalid or duplicate transactions are rejected.
+
 
 ```
 POST /blocks
