@@ -10,7 +10,7 @@ Run `npm start -- --port <port-number> --nodes <node-list>` to start the blockch
 
 `npm start -- --port 3002 --nodes 127.0.0.1:3000,127.0.0.1:3001,127.0.0.1:3003`
 
-# Develop
+# Development
 Run `npm run tsc:watch` to start TypeScript compiler and run `npm run watch` to start node in watch mode.
 
 
