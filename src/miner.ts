@@ -37,7 +37,7 @@ app.post('/transactions/new', (req, res) => {
   miner.broadcastTransaction(signedTransaction, miner.nodes).catch(e => console.error(e.message));
 
   res.status(200).send({
-    message: 'Transaction created successfuly',
+    message: 'Transaction created successfully',
     transaction: signedTransaction,
   });
 });
@@ -100,7 +100,7 @@ app.post('/blocks', (req, res) => {
   const isValid = miner.validateBlock(block);
   const isDuplicate = Boolean(miner.chain.find(blk => blk.timestamp === block.timestamp));
 
-  console.log('Recieved new block');
+  console.log('Received new block');
 
   if (isValid && !isDuplicate) {
     console.log('Block is valid, it will be added to the chain and shared\n');
