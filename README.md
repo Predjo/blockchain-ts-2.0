@@ -1,8 +1,8 @@
 # Introduction
-This repository implements simple blockchain using [TypeScript](https://www.typescriptlang.org). It is inspired by the following [article](https://hackernoon.com/learn-blockchains-by-building-one-117428612f46). It is initially made for Zagreb JS Meetup.
+This repository implements a simple Blockchain using [TypeScript](https://www.typescriptlang.org). It is inspired by the following [article](https://hackernoon.com/learn-Blockchains-by-building-one-117428612f46). It is initially made for Zagreb JS Meetup.
 
 # Usage
-Run `npm start -- --port <port-number> --nodes <node-list>` to start the blockchain node.
+Run `npm start -- --port <port-number> --nodes <node-list>` to start the Blockchain node.
 
 `<node-list>` Is a comma separated string of node IPs.
 
@@ -14,7 +14,7 @@ Run `npm start -- --port <port-number> --nodes <node-list>` to start the blockch
 Run `npm run tsc:watch` to start TypeScript compiler and run `npm run watch` to start node in watch mode.
 
 # Description
-This is a simple blockchain created to showcase some basic Blokchain concepts. It runs as an express server with REST interface.
+This is a simple Blockchain created to showcase some basic Blokchain concepts. It runs as an express server with REST interface.
 Network is created by creating multiple servers and providing them the list of neighboring nodes via the `--nodes` console parameter.
 
 ### Hashing
@@ -27,10 +27,13 @@ Blockchain implements asymmetric cryptography to sign and verify transactions. P
 Blockchain can create simple transactions. It uses the public key of the miner as a `sender` address. Once created the transaction is hashed and signed with the miners private key. Signature is than included in the transaction.
 Other nodes can verify the transaction by rehashing the transaction data, decrypting the signature with the address in the `sender` field and comparing the two hashes.
 
+### Blocks
+Blocks are basic building blocks of the Blockchain. They contain transactions. Once the block is added to the Blockchain its transactions are confirmed. Blocks are created via the process called mining.
+
 ### Proof of Work algorithm
 Blockchain implements basic Proof of Work algorithm. Miners need to find a number called `nonce` that, when added to the block and hashed, produces a hash with `difficulty` number of leading 0s ('0000').  
-
 Blockchain class methods `proofOfWork` and `validateBlock` implement Proof of Work algorithm.
+Proof of work is used to make the creating of the blocks computationally expensive. Reason for that is to discourage the creation of fake blocks which would undermine the integrity of the network.
 
 ### Mining
 Mining is used to finish creating a new block. First a basic block is created using the `createBlock` method. At that point its `nonce` number is `0`. Than the correct `timestamp` is added before starting the Proof of Work algorithm. Once it is finished, the calculated `nonce` is added to the block. At that point the block is finished.
