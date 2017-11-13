@@ -178,8 +178,8 @@ class Blockchain {
     
     for (let index = this.chain.length - 1; index > 0; index -= 1) {
       const block: Block = this.chain[index];
-      const previusBlock = this.chain[index - 1];
-      const previusBlockHash = hash(stringify(previusBlock));
+      const previusBlock: Block = this.chain[index - 1];
+      const previusBlockHash: string = hash(stringify(previusBlock));
 
       if (!(this.validateBlock(block) && (block.previousHash === previusBlockHash))) {
         return false;
