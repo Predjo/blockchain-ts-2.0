@@ -56,7 +56,7 @@ app.get('/mine', (req, res) => {
   if (miner.pendingTransactions.length) {
 
     console.log('Mining started...');
-    const newBlock = miner.mine();
+    const newBlock: Block = miner.mine();
     console.log('Mining complete, new block forged\n');
 
     miner.broadcastBlock(newBlock, miner.nodes).catch(e => console.error(e.message));
@@ -87,8 +87,8 @@ app.get('/chain', (req, res) => {
 app.post('/transactions', (req, res) => {
 
   const transaction: Transaction = req.body;
-  const isValid = miner.validateTransaction(transaction);
-  const isDuplicate = Boolean(miner.pendingTransactions.find(tran => tran.signature === transaction.signature));
+  const isValid: boolean = miner.validateTransaction(transaction);
+  const isDuplicate: boolean = Boolean(miner.pendingTransactions.find(tran => tran.signature === transaction.signature));
 
   console.log(`Recieved transaction ${transaction.signature}`);
 
@@ -112,8 +112,8 @@ app.post('/transactions', (req, res) => {
 app.post('/blocks', (req, res) => {
 
   const block: Block = req.body;
-  const isValid = miner.validateBlock(block);
-  const isDuplicate = Boolean(miner.chain.find(blk => blk.timestamp === block.timestamp));
+  const isValid: boolean = miner.validateBlock(block);
+  const isDuplicate: boolean = Boolean(miner.chain.find(blk => blk.timestamp === block.timestamp));
 
   console.log('Received new block');
 

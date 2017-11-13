@@ -63,8 +63,8 @@ class Blockchain {
   //  and encrypting the hash with the private key
   public signTransaction(transaction: Transaction): Transaction {
     
-    const transactionHash = hash(stringify(transaction));
-    const signature = signWithPrivateKey(this.privateKey, transactionHash);
+    const transactionHash: string = hash(stringify(transaction));
+    const signature: string = signWithPrivateKey(this.privateKey, transactionHash);
     
     return { ...transaction, signature };
   }
@@ -75,7 +75,7 @@ class Blockchain {
   public validateTransaction(transaction: Transaction): boolean {
     const { signature, ...transactionData } = transaction;
 
-    const transactionHash = hash(stringify(transactionData));
+    const transactionHash: string = hash(stringify(transactionData));
 
     return verifyWithPublicKey(transaction.sender, transactionHash, signature);
   }
@@ -109,9 +109,9 @@ class Blockchain {
   // Validates the block by hashing it and checking if the leading number
   //  of zeroes in the hash match the difficulty
   public validateBlock(block: Block): boolean {
-    const difficulty = block.difficulty;
-    const blockHash  = hash(stringify(block));
-    const zeroString = '0'.repeat(difficulty);
+    const difficulty: number = block.difficulty;
+    const blockHash: string  = hash(stringify(block));
+    const zeroString: string = '0'.repeat(difficulty);
 
     return blockHash.indexOf(zeroString) === 0;
   }
@@ -123,15 +123,15 @@ class Blockchain {
   public mine(): Block {
     
     // Coinbase transaction
-    const coinbaseTransaction = this.signTransaction(
+    const coinbaseTransaction: Transaction = this.signTransaction(
       this.createTransaction(this.publicKey, this.publicKey, this.reward, true),
     );
-    const transactions = [coinbaseTransaction, ...this.pendingTransactions];
-    const lastBlock = this.chain[ this.chain.length - 1 ];
-    const previousHash = hash(stringify(lastBlock));
-    const block = this.createBlock(transactions, previousHash, Date.now());
+    const transactions: Array<Transaction> = [coinbaseTransaction, ...this.pendingTransactions];
+    const lastBlock: Block = this.chain[ this.chain.length - 1 ];
+    const previousHash: string = hash(stringify(lastBlock));
+    const block: Block = this.createBlock(transactions, previousHash, Date.now());
 
-    const minedBlock = this.proofOfWork(block);
+    const minedBlock: Block = this.proofOfWork(block);
 
     this.addBlock(minedBlock);
 
@@ -140,7 +140,7 @@ class Blockchain {
 
   // Simple Proof of Work Algorithm:
   // Increment the nonce number in the block until the block is valid
-  // Returns the valid nunce
+  // Returns the valid block
   public proofOfWork(block: Block): Block {
 
     block.nonce = 0;
@@ -177,7 +177,7 @@ class Blockchain {
   public isValid(): boolean {
     
     for (let index = this.chain.length - 1; index > 0; index -= 1) {
-      const block = this.chain[index];
+      const block: Block = this.chain[index];
       const previusBlock = this.chain[index - 1];
       const previusBlockHash = hash(stringify(previusBlock));
 
