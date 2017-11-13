@@ -39,7 +39,7 @@ Proof of work is used to make the creating of the blocks computationally expensi
 Mining is used to create a new block and new coins. It is done using the `mine` method.
 First a basic block is created using the `createBlock` method. It includes all the pending transactions.
 
-Then the miner is awarded with the `reward` amount of coins for its service. That is achieved by creating a special transaction called `Coinbase trasaction` which is than added to the front of the transactions in the block. That process creates new coins in the network.
+Then the miner is awarded with the `reward` amount of coins for its service. That is achieved by creating a special transaction called `coinbase trasaction` which is than added to the front of the transactions in the block. That process creates new coins in the network.
 
 Than the correct `timestamp` is added and the Proof of Work algorithm starts. Once it is finished, the calculated `nonce` is added to the block. At that point the block is finished.
 
