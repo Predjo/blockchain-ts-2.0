@@ -36,17 +36,22 @@ Blockchain class methods `proofOfWork` and `validateBlock` implement Proof of Wo
 Proof of work is used to make the creating of the blocks computationally expensive. Reason for that is to discourage the creation of fake blocks which would undermine the integrity of the network.
 
 ### Mining
-Mining is used to finish creating a new block. First a basic block is created using the `createBlock` method. At that point its `nonce` number is `0`. Than the correct `timestamp` is added before starting the Proof of Work algorithm. Once it is finished, the calculated `nonce` is added to the block. At that point the block is finished.
+Mining is used to create a new block. It is done using the `mine` method.
+First a basic block is created using the `createBlock` method. It includes all the pending transactions.
+
+Then the miner is awarded with the `reward` amount of coins for its service. That is achieved by creating a special transaction called `Coinbase trasaction` which is than added to the front of the transactions in the block. That process creates new coins in the network.
+
+Than the correct `timestamp` is added and the Proof of Work algorithm starts. Once it is finished, the calculated `nonce` is added to the block. At that point the block is finished.
 
 ### Broadcasting
-Transactions and blocks, once created, are broadcasted through the whole network. It is achieved by having each node sending REST calls to each node in the list of nodes given during initialization.
+Transactions and blocks, once created, are broadcast through the whole network. It is achieved by having each node sending REST calls to each node in the list of nodes given during initialization.
 
 # REST API endpoints
 
 ```
 POST /transactions/new
 ```
-Creates a new transaction using the miners public key as a sender address and private key to sign it. After it is created the transaction is added to the pending transaction pool and broadcasted to neighboring nodes.
+Creates a new transaction using the miners public key as a sender address and private key to sign it. After it is created the transaction is added to the pending transaction pool and broadcast to neighboring nodes.
 
 | Parameter | Description |
 |-----------|-------------|
@@ -58,7 +63,7 @@ Creates a new transaction using the miners public key as a sender address and pr
 ```
 POST /mine
 ```
-If there are pending transactions it starts the mining process to create a new block. When created the new block is added to chain and broadcasted to neighboring nodes. Else it returns 400.
+If there are pending transactions it starts the mining process to create a new block. When created the new block is added to chain and broadcast to neighboring nodes. Else it returns 400.
 
 <br/>
 
@@ -72,7 +77,7 @@ Returns the current chain state and validates it.
 ```
 POST /transactions
 ```
-Used for broadcasting of transactions. If the transaction is valid and not duplicate it is added to the pending transaction pool. Transaction is than broadcasted again. Invalid or duplicate transactions are discarded.
+Used for broadcasting of transactions. If the transaction is valid and not duplicate it is added to the pending transaction pool. Transaction is than broadcast again. Invalid or duplicate transactions are discarded.
 
 | Parameter | Description |
 |-----------|-------------|
@@ -87,7 +92,7 @@ Used for broadcasting of transactions. If the transaction is valid and not dupli
 ```
 POST /blocks
 ```
-Used for broadcasting of blocks. If the block is valid and not duplicate it is added to the chain. All the transactions included in the block are removed from the pending transaction pool. Block is than broadcasted again. Invalid or duplicate blocks are discarded.
+Used for broadcasting of blocks. If the block is valid and not duplicate it is added to the chain. All the transactions included in the block are removed from the pending transaction pool. Block is than broadcast again. Invalid or duplicate blocks are discarded.
 
 | Parameter | Description |
 |-----------|-------------|

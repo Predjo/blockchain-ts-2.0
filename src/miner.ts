@@ -28,14 +28,14 @@ nodes.forEach(node => miner.registerNode(node));
 
 // Creates a new transaction using the miners public key as a sender address and private
 //  key to sign it. After it is created the transaction is added to the pending transaction pool
-//  and broadcasted to neighboring nodes.
+//  and broadcast to neighboring nodes.
 app.post('/transactions/new', (req, res) => {
 
   const newTransaction: Transaction = miner.createTransaction(miner.publicKey, req.body.recipient, req.body.amount);
   const signedTransaction: Transaction = miner.signTransaction(newTransaction);
 
   console.log(`Created new transaction ${signedTransaction.signature}`);
-  console.log('It will be added to the list and shared\n');
+  console.log('It will be added to the list and broadcast\n');
 
   miner.pendingTransactions.push(signedTransaction);
   miner.broadcastTransaction(signedTransaction, miner.nodes).catch(e => console.error(e.message));
@@ -47,8 +47,10 @@ app.post('/transactions/new', (req, res) => {
 });
 
 // If there are pending transactions it starts the mining process to create a new block.
-// When created the new block is added to chain and broadcasted to neighboring nodes.
-// Else it returns 400.
+// Rewards the miner by creating a coinbase transaction and appending it to the block
+// That in turn creates new coins
+// When created, the new block is added to chain and broadcast to neighboring nodes.
+// If no pending transactions it returns 400.
 app.get('/mine', (req, res) => {
 
   if (miner.pendingTransactions.length) {
@@ -81,7 +83,7 @@ app.get('/chain', (req, res) => {
 
 // Used for broadcasting of transactions.
 // If the transaction is valid and not duplicate, it is added to the pending transaction pool. 
-// Transaction is than broadcasted again. Invalid or duplicate transactions are discarded.
+// Transaction is than broadcast again. Invalid or duplicate transactions are discarded.
 app.post('/transactions', (req, res) => {
 
   const transaction: Transaction = req.body;
@@ -91,7 +93,7 @@ app.post('/transactions', (req, res) => {
   console.log(`Recieved transaction ${transaction.signature}`);
 
   if (isValid && !isDuplicate) {
-    console.log('Transaction is valid, it will be added to the list and shared\n');
+    console.log('Transaction is valid, it will be added to the list and broadcast\n');
     
     miner.pendingTransactions.push(transaction);
     miner.broadcastTransaction(transaction, miner.nodes).catch(e => console.error(e.message));
@@ -106,7 +108,7 @@ app.post('/transactions', (req, res) => {
 // Used for broadcasting of blocks.
 // If the block is valid and not duplicate it is added to the chain. 
 // All the transactions included in the block are removed from the pending transaction pool.
-// Block is than broadcasted again. Invalid or duplicate blocks are discarded.
+// Block is than broadcast again. Invalid or duplicate blocks are discarded.
 app.post('/blocks', (req, res) => {
 
   const block: Block = req.body;
@@ -116,7 +118,7 @@ app.post('/blocks', (req, res) => {
   console.log('Received new block');
 
   if (isValid && !isDuplicate) {
-    console.log('Block is valid, it will be added to the chain and shared\n');
+    console.log('Block is valid, it will be added to the chain and broadcast\n');
     miner.addBlock(block);
     miner.broadcastBlock(block, miner.nodes).catch(e => console.error(e.message));
   } else {

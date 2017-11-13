@@ -20,6 +20,7 @@ class Blockchain {
   public chain: Array<Block>;
   public pendingTransactions: Array<Transaction>;
   public difficulty: number;
+  public reward: number;
 
   public publicKey: string;
   private privateKey: string;
@@ -35,6 +36,9 @@ class Blockchain {
     // Mining difficulty
     this.difficulty = 4;
 
+    // Mining reward
+    this.reward = 10;
+
     // Generate public/private key pair using ECDSA
     [this.publicKey, this.privateKey] = generateKeyPair();
 
@@ -49,9 +53,9 @@ class Blockchain {
   }
 
   // Creates a new transaction
-  public createTransaction(sender: string, recipient: string, amount: number): Transaction {
+  public createTransaction(sender: string, recipient: string, amount: number, coinbase: boolean = false): Transaction {
     return {
-      sender, recipient, amount, timestamp : Date.now(),
+      sender, recipient, amount, coinbase, timestamp : Date.now(),
     };
   }
 
@@ -112,11 +116,17 @@ class Blockchain {
     return blockHash.indexOf(zeroString) === 0;
   }
 
-  // Create block by using all the pending transactions and current timestamp
-  //  running the proofOfWork until the valid nunce is found
+  // Creates a coinbase transaction
+  // Creates a block by using the coinbase and all the pending transactions
+  //  adding current timestamp and running the proofOfWork until the valid nunce is found
   // Adds the new mined block to the chain and returns it  
   public mine(): Block {
-    const transactions = [...this.pendingTransactions];
+    
+    // Coinbase transaction
+    const coinbaseTransaction = this.signTransaction(
+      this.createTransaction(this.publicKey, this.publicKey, this.reward, true),
+    );
+    const transactions = [coinbaseTransaction, ...this.pendingTransactions];
     const lastBlock = this.chain[ this.chain.length - 1 ];
     const previousHash = hash(stringify(lastBlock));
     const block = this.createBlock(transactions, previousHash, Date.now());
