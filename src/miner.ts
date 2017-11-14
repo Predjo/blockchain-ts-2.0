@@ -77,7 +77,7 @@ app.get('/chain', (req, res) => {
   res.status(200).send({
     chain : miner.chain,
     length : miner.chain.length,
-    isValid : miner.isValid(),
+    isValid : miner.validateChain(),
   });
 });
 

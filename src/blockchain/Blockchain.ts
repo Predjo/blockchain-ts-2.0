@@ -80,12 +80,6 @@ class Blockchain {
     return verifyWithPublicKey(transaction.sender, transactionHash, signature);
   }
 
-  // Add a transaction to the list of pending transactions
-  public addTransaction(transaction: Transaction) {
-    
-    this.pendingTransactions.push(transaction);
-  }
-
   // Send the transaction to the provided list of nodes
   public async broadcastTransaction(transaction: Transaction, nodes: Set<string>) {
     for (const node of nodes) {
@@ -174,7 +168,7 @@ class Blockchain {
 
   // Validates the chain by validating each block and checking if previousHash
   //  matches the hash of the previous block in the chain
-  public isValid(): boolean {
+  public validateChain(): boolean {
     
     for (let index = this.chain.length - 1; index > 0; index -= 1) {
       const block: Block = this.chain[index];
