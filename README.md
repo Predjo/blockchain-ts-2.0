@@ -81,8 +81,8 @@ Used for broadcasting of transactions. If the transaction is valid and not dupli
 
 | Parameter | Description |
 |-----------|-------------|
-| `recipient` | Hexadecimal hash address of a transaction recipient |
-| `sender` | Hexadecimal hash address of a transaction sender |
+| `recipient` | Public key address of a transaction recipient |
+| `sender` | Public key address of a transaction sender |
 | `amount` | Amount of coins to be transfered |
 | `timestamp` | Unix time when transaction was created |
 | `signature` | Transaction hash encrypted with the private key of the sender |
