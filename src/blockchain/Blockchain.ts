@@ -65,8 +65,9 @@ class Blockchain {
     
     const transactionHash: string = hash(stringify(transaction));
     const signature: string = signWithPrivateKey(this.privateKey, transactionHash);
+    transaction.signature = signature;
     
-    return { ...transaction, signature };
+    return transaction;
   }
 
 
