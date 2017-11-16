@@ -102,7 +102,7 @@ class Blockchain {
   }
 
   // Validates the block by hashing it and checking if the leading number
-  //  of zeroes in the hash match the difficulty
+  //  of zeroes in the hash matches the difficulty
   public validateBlock(block: Block): boolean {
     const difficulty: number = block.difficulty;
     const blockHash: string  = hash(stringify(block));
