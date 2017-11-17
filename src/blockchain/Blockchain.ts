@@ -14,35 +14,31 @@ import {
 } from './Crypto';
 
 class Blockchain {
-
-  public nodes: Set<string>;
   
-  public chain: Array<Block>;
-  public pendingTransactions: Array<Transaction>;
-  public difficulty: number;
-  public reward: number;
+  public chain: Array<Block>;  // Array of Blocks
+  public pendingTransactions: Array<Transaction>; // Array of transactions waiting for confirmation
 
-  public publicKey: string;
-  private privateKey: string;
+  public nodes: Set<string>;   // Set of neighbouring nodes
+  public difficulty: number;   // Mining difficulty
+  public reward: number;       // Mining reward
+
+  public publicKey: string;    // Public key used as an address
+  private privateKey: string;  // Private key used for signing transactions
 
   constructor() {
 
     this.chain = [];
     this.pendingTransactions = [];
 
-    // List of neighbouring nodes
     this.nodes = new Set();
 
-    // Mining difficulty
     this.difficulty = 4;
-
-    // Mining reward
     this.reward = 10;
 
     // Generate public/private key pair using ECDSA
     [this.publicKey, this.privateKey] = generateKeyPair();
 
-    // Create the Genesis block
+    // Create the Genesis Block
     const genesisBlock = this.createBlock([], undefined, 1337);
     this.addBlock(genesisBlock);
   }
@@ -81,16 +77,16 @@ class Blockchain {
     return verifyWithPublicKey(transaction.sender, transactionHash, signature);
   }
 
-  // Send the transaction to the provided list of nodes
-  public async broadcastTransaction(transaction: Transaction, nodes: Set<string>) {
-    for (const node of nodes) {
+  // Send the transaction to the neighboring nodes
+  public async broadcastTransaction(transaction: Transaction) {
+    for (const node of this.nodes) {
       console.log(`Sending transaction to ${ node }`);
       await axios.post(`http://${ node }/transactions`, transaction);   
     }
     console.log(`Broadcast done\n`);
   }
 
-  // Creates a new block
+  // Creates a new Block
   public createBlock(transactions: Array<Transaction>, previousHash: string, timestamp: number = 0): Block {
     return {
       transactions,
@@ -101,7 +97,7 @@ class Blockchain {
     };
   }
 
-  // Validates the block by hashing it and checking if the leading number
+  // Validates the Block by hashing it and checking if the leading number
   //  of zeroes in the hash matches the difficulty
   public validateBlock(block: Block): boolean {
     const difficulty: number = block.difficulty;
@@ -112,15 +108,16 @@ class Blockchain {
   }
 
   // Creates a coinbase transaction
-  // Creates a block by using the coinbase and all the pending transactions
-  //  adding current timestamp and running the proofOfWork until the valid nunce is found
-  // Adds the new mined block to the chain and returns it  
+  // Creates a Block by using the coinbase and all the pending transactions
+  // Adds the current timestamp and runs the proofOfWork until the valid Block is found
+  // Adds the new mined Block to the chain and returns it  
   public mine(): Block {
     
     // Coinbase transaction
     const coinbaseTransaction: Transaction = this.signTransaction(
       this.createTransaction(this.publicKey, this.publicKey, this.reward, true),
     );
+    
     const transactions: Array<Transaction> = [coinbaseTransaction, ...this.pendingTransactions];
     const lastBlock: Block = this.chain[ this.chain.length - 1 ];
     const previousHash: string = hash(stringify(lastBlock));
@@ -134,8 +131,8 @@ class Blockchain {
   }
 
   // Simple Proof of Work Algorithm:
-  // Increment the nonce number in the block until the block is valid
-  // Returns the valid block
+  // Increment the nonce number in the Block until the Block is valid
+  // Returns the valid Block
   public proofOfWork(block: Block): Block {
 
     block.nonce = 0;
@@ -147,7 +144,7 @@ class Blockchain {
     return block;
   }
 
-  // Adds a block to the Blockchain and removes all the pending transactiones included in the block
+  // Adds a Block to the Blockchain and removes all the pending transactions included in the Block
   public addBlock(block: Block) {
     this.chain.push(block);
     
@@ -158,17 +155,17 @@ class Blockchain {
     );
   }
   
-  // Send the block to the provided list of nodes
-  public async broadcastBlock(block: Block, nodes: Set<string>) {
-    for (const node of nodes) {
+  // Send the transaction to the neighboring nodes
+  public async broadcastBlock(block: Block) {
+    for (const node of this.nodes) {
       console.log(`Sending block to ${ node }`);
       await axios.post(`http://${ node }/blocks`, block);
     }
     console.log(`Broadcast done\n`);
   }
 
-  // Validates the chain by validating each block and checking if previousHash
-  //  matches the hash of the previous block in the chain
+  // Validates the chain by validating each Block and checking if previousHash
+  //  matches the hash of the previous Block in the chain
   public validateChain(): boolean {
     
     for (let index = this.chain.length - 1; index > 0; index -= 1) {
