@@ -13,6 +13,9 @@ Run `npm start -- --port <port-number> --nodes <node-list>` to start the Blockch
 # Development
 Run `npm run tsc:watch` to start TypeScript compiler and run `npm run watch` to start node in watch mode.
 
+# Tests
+Run `npm test` to run unit tests.
+
 # Description
 This is a simple Blockchain created to showcase some basic Blokchain concepts. It runs as an express server with REST interface.
 Network is created by creating multiple servers and providing them the list of neighboring nodes via the `--nodes` console parameter.
