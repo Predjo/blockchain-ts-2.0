@@ -8,7 +8,8 @@
     "tsc:watch": "tsc --w",
     "start": "tsc && node dist/miner.js",
     "watch": "nodemon dist/miner.js",
-    "lint": "tslint --project tslint.json src/**/*.ts"
+    "lint": "tslint --project tslint.json src/**/*.ts",
+    "test": "mocha --require ts-node/register ./test/*.test.ts"
   },
   "keywords": [
     "javascript",
@@ -31,7 +32,11 @@
     "typescript": "^2.5.3"
   },
   "devDependencies": {
+    "@types/chai": "^4.0.5",
     "body-parser": "^1.18.2",
-    "nodemon": "^1.12.1"
+    "chai": "^4.1.2",
+    "mocha": "^4.0.1",
+    "nodemon": "^1.12.1",
+    "ts-node": "^3.3.0"
   }
 }
