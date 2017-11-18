@@ -20,7 +20,7 @@ const port: number = args.port || 3000;
 // Define miner
 const miner = new Blockchain();
 
-// Parse the list of neighbor nodes and register them with the miner
+// Parse the list of neighbour nodes and register them with the miner
 const nodes = args.nodes ? args.nodes.split(',') : [] ;
 nodes.forEach(node => miner.registerNode(node));
 
@@ -83,7 +83,7 @@ app.get('/chain', (req, res) => {
 
 // Used for broadcasting of transactions.
 // If the transaction is valid and not duplicate, it is added to the pending transaction pool. 
-// Transaction is than broadcast again. Invalid or duplicate transactions are discarded.
+// Transaction is then broadcast again. Invalid or duplicate transactions are discarded.
 app.post('/transactions', (req, res) => {
 
   const transaction: Transaction = req.body;

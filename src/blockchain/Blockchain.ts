@@ -155,7 +155,7 @@ class Blockchain {
     );
   }
   
-  // Send the transaction to the neighboring nodes
+  // Send the transaction to the neighbouring nodes
   public async broadcastBlock(block: Block) {
     for (const node of this.nodes) {
       console.log(`Sending block to ${ node }`);
