@@ -15,25 +15,17 @@ import {
 
 class Blockchain {
   
-  public chain: Array<Block>;  // Array of Blocks
-  public pendingTransactions: Array<Transaction>; // Array of transactions waiting for confirmation
+  public chain: Array<Block> = [];                      // Array of Blocks
+  public pendingTransactions: Array<Transaction> = [] ; // Array of transactions waiting for confirmation
 
-  public nodes: Set<string>;   // Set of neighbouring nodes
-  public difficulty: number;   // Mining difficulty
-  public reward: number;       // Mining reward
+  public nodes: Set<string> = new Set(); // Set of neighbouring nodes
+  public difficulty: number = 4;         // Mining difficulty
+  public reward: number = 10;            // Mining reward
 
   public publicKey: string;    // Public key used as an address
   private privateKey: string;  // Private key used for signing transactions
 
   constructor() {
-
-    this.chain = [];
-    this.pendingTransactions = [];
-
-    this.nodes = new Set();
-
-    this.difficulty = 4;
-    this.reward = 10;
 
     // Generate public/private key pair using ECDSA
     [this.publicKey, this.privateKey] = generateKeyPair();

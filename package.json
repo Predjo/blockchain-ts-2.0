@@ -20,10 +20,9 @@
   "author": "Nikola Predovan",
   "license": "ISC",
   "dependencies": {
-    "@types/axios": "^0.14.0",
-    "@types/node": "^8.0.31",
     "axios": "^0.16.2",
     "express": "^4.16.1",
+    "body-parser": "^1.18.2",
     "json-stable-stringify": "^1.0.1",
     "jsrsasign": "^8.0.4",
     "minimist": "^1.2.0",
@@ -32,8 +31,10 @@
     "typescript": "^2.5.3"
   },
   "devDependencies": {
+    "@types/axios": "^0.14.0",
     "@types/chai": "^4.0.5",
-    "body-parser": "^1.18.2",
+    "@types/mocha": "^2.2.44",
+    "@types/node": "^8.0.31",
     "chai": "^4.1.2",
     "mocha": "^4.0.1",
     "nodemon": "^1.12.1",
