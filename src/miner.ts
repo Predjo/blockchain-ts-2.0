@@ -86,17 +86,19 @@ app.get('/chain', (req, res) => {
 // Transaction is then broadcast again. Invalid or duplicate transactions are discarded.
 app.post('/transactions', (req, res) => {
 
-  const transaction: Transaction = req.body;
-  const isValid: boolean = miner.validateTransaction(transaction);
-  const isDuplicate: boolean = Boolean(miner.pendingTransactions.find(tran => tran.signature === transaction.signature));
+  const recievedTransaction: Transaction = req.body;
+  const isValid: boolean = miner.validateTransaction(recievedTransaction);
+  const isDuplicate: boolean = Boolean(miner.pendingTransactions.find(
+    transaction => transaction.signature === recievedTransaction.signature),
+  );
 
-  console.log(`Recieved transaction ${transaction.signature}`);
+  console.log(`Recieved transaction ${recievedTransaction.signature}`);
 
   if (isValid && !isDuplicate) {
     console.log('Transaction is valid, it will be added to the list and broadcast\n');
     
-    miner.pendingTransactions.push(transaction);
-    miner.broadcastTransaction(transaction).catch(e => console.error(e.message));
+    miner.pendingTransactions.push(recievedTransaction);
+    miner.broadcastTransaction(recievedTransaction).catch(e => console.error(e.message));
     
   } else {
     console.error('Transaction is invalid or duplicate and it will be discarded\n');
@@ -111,16 +113,16 @@ app.post('/transactions', (req, res) => {
 // Block is than broadcast again. Invalid or duplicate Blocks are discarded.
 app.post('/blocks', (req, res) => {
 
-  const block: Block = req.body;
-  const isValid: boolean = miner.validateBlock(block);
-  const isDuplicate: boolean = Boolean(miner.chain.find(blk => blk.timestamp === block.timestamp));
+  const recievedBlock: Block = req.body;
+  const isValid: boolean = miner.validateBlock(recievedBlock);
+  const isDuplicate: boolean = Boolean(miner.chain.find(block => block.timestamp === recievedBlock.timestamp));
 
   console.log('Received new block');
 
   if (isValid && !isDuplicate) {
     console.log('Block is valid, it will be added to the chain and broadcast\n');
-    miner.addBlock(block);
-    miner.broadcastBlock(block).catch(e => console.error(e.message));
+    miner.addBlock(recievedBlock);
+    miner.broadcastBlock(recievedBlock).catch(e => console.error(e.message));
   } else {
     console.error('Block is invalid or duplicate and it will be discarded\n');
   }

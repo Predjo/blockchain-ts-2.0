@@ -18,7 +18,7 @@
     "nodejs"
   ],
   "author": "Nikola Predovan",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "axios": "^0.16.2",
     "express": "^4.16.1",
