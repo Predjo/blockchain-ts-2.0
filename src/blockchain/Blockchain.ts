@@ -69,6 +69,11 @@ class Blockchain {
     return verifyWithPublicKey(transaction.sender, transactionHash, signature);
   }
 
+  // Add a transaction to the pending list of transactions
+  public addTransaction(transaction: Transaction) {
+    this.pendingTransactions.push(transaction);
+  }
+
   // Send the transaction to the neighboring nodes
   public async broadcastTransaction(transaction: Transaction) {
     for (const node of this.nodes) {

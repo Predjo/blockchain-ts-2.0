@@ -37,7 +37,7 @@ app.post('/transactions/new', (req, res) => {
   console.log(`Created new transaction ${signedTransaction.signature}`);
   console.log('It will be added to the list and broadcast\n');
 
-  miner.pendingTransactions.push(signedTransaction);
+  miner.addTransaction(signedTransaction);
   miner.broadcastTransaction(signedTransaction).catch(e => console.error(e.message));
 
   res.status(200).send({
@@ -97,7 +97,7 @@ app.post('/transactions', (req, res) => {
   if (isValid && !isDuplicate) {
     console.log('Transaction is valid, it will be added to the list and broadcast\n');
     
-    miner.pendingTransactions.push(recievedTransaction);
+    miner.addTransaction(recievedTransaction);
     miner.broadcastTransaction(recievedTransaction).catch(e => console.error(e.message));
     
   } else {

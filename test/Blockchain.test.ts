@@ -1,5 +1,4 @@
 
-import { describe, it } from 'mocha';
 import { expect } from 'chai';
 
 import Blockchain from '../src/blockchain/Blockchain';
@@ -53,7 +52,7 @@ describe('Blockchain', () => {
     const newTransaction = miner.createTransaction(miner.publicKey, 'recipient address', 5, false);
     const signedTransaction = miner.signTransaction(newTransaction);
 
-    miner.pendingTransactions.push(signedTransaction);
+    miner.addTransaction(signedTransaction);
 
     // Reduce dificulty to speed up the test
     miner.difficulty = 2;
