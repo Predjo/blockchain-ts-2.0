@@ -31,7 +31,7 @@ class Blockchain {
     [this.publicKey, this.privateKey] = generateKeyPair();
 
     // Create the Genesis Block
-    const genesisBlock = this.createBlock([], undefined, 1337);
+    const genesisBlock = this.createBlock([], undefined, 0, 1337);
     this.addBlock(genesisBlock);
   }
 
@@ -41,9 +41,16 @@ class Blockchain {
   }
 
   // Creates a new transaction
-  public createTransaction(sender: string, recipient: string, amount: number, coinbase: boolean = false): Transaction {
+  public createTransaction(
+    sender    : string,
+    recipient : string,
+    amount    : number,
+    coinbase  : boolean = false,
+    timestamp : number = Date.now(),
+  ): Transaction {
+    
     return {
-      sender, recipient, amount, coinbase, timestamp : Date.now(),
+      sender, recipient, amount, coinbase, timestamp,
     };
   }
 
@@ -84,12 +91,15 @@ class Blockchain {
   }
 
   // Creates a new Block
-  public createBlock(transactions: Array<Transaction>, previousHash: string, timestamp: number = 0): Block {
+  public createBlock(
+    transactions : Array<Transaction>,
+    previousHash : string,
+    timestamp    : number = Date.now(),
+    nonce        : number = 0,
+  ): Block {
+    
     return {
-      transactions,
-      previousHash,
-      timestamp,
-      nonce: 0,
+      transactions, previousHash, timestamp, nonce,
       difficulty: this.difficulty,
     };
   }
@@ -118,7 +128,7 @@ class Blockchain {
     const transactions: Array<Transaction> = [coinbaseTransaction, ...this.pendingTransactions];
     const lastBlock: Block = this.chain[ this.chain.length - 1 ];
     const previousHash: string = hash(stringify(lastBlock));
-    const block: Block = this.createBlock(transactions, previousHash, Date.now());
+    const block: Block = this.createBlock(transactions, previousHash, Date.now(), 0);
 
     const minedBlock: Block = this.proofOfWork(block);
 
@@ -152,7 +162,7 @@ class Blockchain {
     );
   }
   
-  // Send the transaction to the neighbouring nodes
+  // Send the Block to the neighbouring nodes
   public async broadcastBlock(block: Block) {
     for (const node of this.nodes) {
       console.log(`Sending block to ${ node }`);

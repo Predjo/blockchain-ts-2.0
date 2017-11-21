@@ -46,41 +46,6 @@ app.post('/transactions/new', (req, res) => {
   });
 });
 
-// If there are pending transactions it starts the mining process to create a new Block.
-// Rewards the miner by creating a coinbase transaction and appending it to the Block
-// That in turn creates new coins
-// When created, the new Block is added to chain and broadcast to neighboring nodes.
-// If no pending transactions it returns 400.
-app.get('/mine', (req, res) => {
-
-  if (miner.pendingTransactions.length) {
-
-    console.log('Mining started...');
-    const newBlock: Block = miner.mine();
-    console.log('Mining complete, new block forged\n');
-
-    miner.broadcastBlock(newBlock).catch(e => console.error(e.message));
-
-    res.status(200).send({
-      message : 'New Block Forged',
-      block : newBlock,
-    });
-  } else {
-    res.status(400).send({
-      message : 'No Pending Transactions!',
-    });    
-  }
-});
-
-// Returns the current chain state and validates it.
-app.get('/chain', (req, res) => {
-  res.status(200).send({
-    chain : miner.chain,
-    length : miner.chain.length,
-    isValid : miner.validateChain(),
-  });
-});
-
 // Used for broadcasting of transactions.
 // If the transaction is valid and not duplicate, it is added to the pending transaction pool. 
 // Transaction is then broadcast again. Invalid or duplicate transactions are discarded.
@@ -107,6 +72,32 @@ app.post('/transactions', (req, res) => {
   res.status(200).send();
 });
 
+// If there are pending transactions it starts the mining process to create a new Block.
+// Rewards the miner by creating a coinbase transaction and appending it to the Block
+// That in turn creates new coins
+// When created, the new Block is added to chain and broadcast to neighboring nodes.
+// If no pending transactions it returns 400.
+app.get('/mine', (req, res) => {
+
+  if (miner.pendingTransactions.length) {
+
+    console.log('Mining started...');
+    const newBlock: Block = miner.mine();
+    console.log('Mining complete, new block forged\n');
+
+    miner.broadcastBlock(newBlock).catch(e => console.error(e.message));
+
+    res.status(200).send({
+      message : 'New Block Forged',
+      block : newBlock,
+    });
+  } else {
+    res.status(400).send({
+      message : 'No Pending Transactions!',
+    });    
+  }
+});
+
 // Used for broadcasting of Blocks.
 // If the Block is valid and not duplicate it is added to the chain. 
 // All the transactions included in the Block are removed from the pending transaction pool.
@@ -128,6 +119,15 @@ app.post('/blocks', (req, res) => {
   }
 
   res.status(200).send();
+});
+
+// Returns the current chain state and validates it.
+app.get('/chain', (req, res) => {
+  res.status(200).send({
+    chain : miner.chain,
+    length : miner.chain.length,
+    isValid : miner.validateChain(),
+  });
 });
 
 app.listen(port);
