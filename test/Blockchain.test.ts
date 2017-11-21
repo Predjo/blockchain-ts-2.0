@@ -10,7 +10,8 @@ describe('Blockchain', () => {
     const miner = new Blockchain();
 
     expect(miner.chain).to.have.length(1);
-    expect(miner.chain[0].timestamp).to.equal(1337);
+    expect(miner.chain[0].timestamp).to.equal(0);
+    expect(miner.chain[0].nonce).to.equal(1337);
     expect(miner.pendingTransactions).to.have.length(0);
     expect(miner.reward).to.equal(10);
     expect(miner.difficulty).to.equal(4);
